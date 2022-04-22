@@ -44,6 +44,7 @@ class Super_Light_Login_Plugin {
 			'section' => 'section_two',
 			'type' => 'select',
 			'helper' => 'Replace WP logo with your Site Title',
+			'supplimental' => '',
 			'options' => array(
 				'option1' => 'Yes',
 				'option2' => 'No',
