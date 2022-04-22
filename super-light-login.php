@@ -87,7 +87,6 @@ class Super_Light_Login_Plugin {
     	<div class="wrap">
     		<h2>Super Light Login Settings</h2><?php
             if ( isset( $_GET['settings-updated'] ) && $_GET['settings-updated'] ){
-                  $this->admin_notice();
             } ?>
     		<form method="POST" action="options.php">
                 <?php
@@ -97,12 +96,6 @@ class Super_Light_Login_Plugin {
                 ?>
     		</form>
     	</div> <?php
-    }
-    
-    public function admin_notice() { ?>
-        <div class="notice notice-success is-dismissible">
-            <p>Your settings have been updated!</p>
-        </div><?php
     }
     public function setup_sections() {
         add_settings_section( 'section_one', 'Register Text and Link Settings', array( $this, 'section_callback' ), 'sll_fields' );
