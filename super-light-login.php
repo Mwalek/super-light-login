@@ -17,6 +17,53 @@
 require_once plugin_dir_path(__FILE__) . 'includes/sll-functions.php';
 
 class Super_Light_Login_Plugin {
+	public $all_fields = array(
+		array(
+			'uid' => 'register_text_field',
+			'label' => 'Change register text',
+			'section' => 'section_one',
+			'type' => 'text',
+			'placeholder' => 'Sign up',
+			'helper' => 'For example change register to sign up or create account',
+			'supplimental' => '',
+			'default' => '',
+		),
+		array(
+			'uid' => 'register_url_field',
+			'label' => 'Change register url',
+			'section' => 'section_one',
+			'type' => 'text',
+			'placeholder' => 'join-now',
+			'helper' => 'Use only the page slug. For example use <em><strong>create-account</strong></em> NOT <em><strong>example.com/create-account<em></strong>',
+			'supplimental' => '',
+			'default' => '',
+		),
+		array(
+			'uid' => 'logo_settings_one',
+			'label' => 'Enable logo replacement',
+			'section' => 'section_two',
+			'type' => 'select',
+			'helper' => 'Replace WP logo with your Site Title',
+			'options' => array(
+				'option1' => 'Yes',
+				'option2' => 'No',
+			),
+			'default' => array('option1'),
+		),
+		array(
+			'uid' => 'logo_settings_url',
+			'label' => 'Change replacement text link (optional)',
+			'section' => 'section_two',
+			'type' => 'text',
+			'placeholder' => 'about-mysite',
+			'helper' => 'Use only the page slug',
+			'supplimental' => 'This will send users to a page of your choice.<em> Your Homepage is the default. </em>',
+			'default' => '',
+		)
+	);
+	public function get_sll_fields($offset1, $offset2 = 'default') {
+        return( $this->all_fields[$offset1][$offset2] );
+    }
     public function __construct() {
     	// Hook into the admin menu
     	add_action( 'admin_menu', array( $this, 'create_plugin_settings_page' ) );
@@ -74,47 +121,7 @@ class Super_Light_Login_Plugin {
     	}
     }
     public function setup_fields() {
-        $fields = array(
-        	array(
-        		'uid' => 'register_text_field',
-        		'label' => 'Change register text',
-        		'section' => 'section_one',
-        		'type' => 'text',
-        		'placeholder' => 'Sign up',
-        		'helper' => 'For example change register to sign up or create account',
-        		'supplimental' => '',
-        	),
-			array(
-        		'uid' => 'register_url_field',
-        		'label' => 'Change register url',
-        		'section' => 'section_one',
-        		'type' => 'text',
-        		'placeholder' => 'join-now',
-        		'helper' => 'Use only the page slug. For example use <em><strong>create-account</strong></em> NOT <em><strong>example.com/create-account<em></strong>',
-        		'supplimental' => '',
-        	),
-			array(
-        		'uid' => 'logo_settings_one',
-        		'label' => 'Enable logo replacement',
-        		'section' => 'section_two',
-        		'type' => 'select',
-				'helper' => 'Replace WP logo with your Site Title',
-        		'options' => array(
-        			'option1' => 'Yes',
-        			'option2' => 'No',
-        		),
-                'default' => array()
-        	),
-						array(
-        		'uid' => 'logo_settings_url',
-        		'label' => 'Change replacement text link (optional)',
-        		'section' => 'section_two',
-        		'type' => 'text',
-        		'placeholder' => 'about-mysite',
-        		'helper' => 'Use only the page slug',
-        		'supplimental' => 'This will send users to a page of your choice.<em> Your Homepage is the default. </em>',
-        	)
-        );
+        $fields = $this->all_fields;
     	foreach( $fields as $field ){
         	add_settings_field( $field['uid'], $field['label'], array( $this, 'field_callback' ), 'sll_fields', $field['section'], $field );
             register_setting( 'sll_fields', $field['uid'] );
@@ -170,18 +177,20 @@ class Super_Light_Login_Plugin {
     }
 	
 	//Change Register Link and Text on wp-login page
-}
-new Super_Light_Login_Plugin();
 
-	function sll_register_link( $link ) {
-		$custom_register_text = get_option('register_text_field');
+	public function sll_register_link( $link ) {
+		$custom_register_text = get_option('register_text_field', $this->get_sll_fields(0));
 		/*Required: Replace Register_URL with the URL of registration*/
-		$custom_register_link = get_option('register_url_field');
+		$custom_register_link = get_option('register_url_field', $this->get_sll_fields(1));
 		/*Optional: You can optionally change the register text e.g. Signup*/
 		$register_text = $custom_register_text;
 		$link = '<a href="'.$custom_register_link.'">'.$register_text.'</a>';
 		return $link;
 	}
+}
+new Super_Light_Login_Plugin();
+
+	
 	
 	function plugin_add_settings_link( $links ) {
 		$settings_link = '<a href="options-general.php?page=sll_fields">' . __( 'Settings' ) . '</a>';
